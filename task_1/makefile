@@ -1,6 +1,5 @@
 CFLAGS = -c -Wall
 
-all: task_1
 
 task_1: main.o task_1.o 
 	g++ main.o task_1.o -o task_1
@@ -13,3 +12,6 @@ task_1.o: task_1.cpp task_1.hpp
 clean:
 	rm -rf *.o task_1
 
+gr:
+	chmod +x printAll.gpi
+	./printAll.gpi
