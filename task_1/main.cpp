@@ -23,7 +23,7 @@ int main(int argc, char* argv[]){
     double* cn  = new double[N+1];
 
 
-    if ((!xk) || (!yk) || (!phi)){
+    if ((!xk) || (!yk) || (!phi) || (!cn)){
         std::cout<<"Not enough memory!\n";
 	 	return -1;
     }
@@ -38,8 +38,9 @@ int main(int argc, char* argv[]){
     }
     
 
-    std::cout<<"      xk         yk         cn              "<<std::endl;
-    for (int i = 0; i < N+1; ++i){
+    std::cout<<"      xk         yk         yk*              "<<std::endl;
+    for (int i = 1; i < N; ++i){
+        CoeffCalculate(N, i, yk, phi, cn);
         FourierCompute(cn, N, (- h/2. + i* h));
         std::cout << std::setprecision(5) << std::fixed \
         << std::setw(10) << xk[i] << " " \
@@ -47,11 +48,7 @@ int main(int argc, char* argv[]){
         << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
         
     }
-    
 
-   
-    
-    
     delete[] xk; 
     delete[] yk; 
     delete[] phi; 

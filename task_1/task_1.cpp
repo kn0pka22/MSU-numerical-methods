@@ -34,18 +34,18 @@ double PhiCalculate(int n, int k, double h){
     return sin(M_PI * n * (-h/2. + k*h));
 }
 
-void PhiVectorCalculate(int N, int n, double* phi){  //phi_k^{(n)} for fixed k
+void PhiVectorCalculate(int N, int k, double* phi){  //phi_k^{(n)} for fixed k
     double h = 1/(N-0.5);
-    phi[0] = 0;
-    for (int k=1;k<N;++k){
-        phi[k] = PhiCalculate(n, k, h);
+    //phi[0] = 0;
+    for (int i=1;i<N;++i){
+        phi[i] = PhiCalculate(i, k, h);
     }
-    phi[N]=0;
+    //phi[N]=0;
 }
 
 double ScalarProduct(double* ar1,double* ar2, int N){
     double res = 0;
-    for (int k=1;k<N;++k){
+    for (int k=1;k<N; ++k){
         res+=ar1[k] * ar2[k];   //the original scalar product requires multiplication by h, but it cancels out
     }
     return res;
