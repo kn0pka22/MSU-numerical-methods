@@ -34,11 +34,11 @@ double PhiCalculate(int n, int k, double h){
     return sin(M_PI * n * (-h/2. + k*h));
 }
 
-void PhiVectorCalculate(int N, int k, double* phi){  //phi_k^{(n)} for fixed k
+void PhiVectorCalculate(int N, int n, double* phi){  //phi_k^{(n)} for fixed k
     double h = 1/(N-0.5);
     //phi[0] = 0;
-    for (int i=1;i<N;++i){
-        phi[i] = PhiCalculate(i, k, h);
+    for (int k=1;k<N;++k){
+        phi[k] = PhiCalculate(n, k, h);
     }
     //phi[N]=0;
 }
@@ -55,7 +55,7 @@ void CoeffCalculate(int N, int k, double* yk, double* phi, double* cn){
     double a = 0;
     double b = 0; 
     for (int n=1; n<N; ++n){
-        PhiVectorCalculate(N, k, phi);
+        PhiVectorCalculate(N, n, phi);
         a = ScalarProduct(yk, phi, N);
         b = ScalarProduct(phi,phi, N);
         cn[n] = a/b;
