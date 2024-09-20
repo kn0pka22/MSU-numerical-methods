@@ -77,3 +77,39 @@ double FourierCompute(double* cn, int N, double x){
     }
     return res;
 }
+
+
+void WriteToConsole(int N, double* xk, double* yk, double* cn, double* phi){
+    double h = 1/(N-0.5);
+    std::cout<<"      xk         yk         yk*              "<<std::endl;
+    for (int i = 1; i < N; ++i){
+        CoeffCalculate(N, i, yk, phi, cn);
+        FourierCompute(cn, N, (- h/2. + i* h));
+        std::cout << std::setprecision(5) << std::fixed \
+        << std::setw(10) << xk[i] << " " \
+        << std::setw(10) << yk[i] << " " \
+        << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
+        
+    }
+}
+
+void WriteToFile(const std::string& filename, int N, double* xk, double* yk, double* cn, double* phi) {
+    double h = 1/(N-0.5);
+    std::ofstream outFile(filename);
+    if (outFile.is_open()) {
+        outFile << "      xk         yk         yk*              "<<std::endl;
+        for (int i = 1; i < N; ++i){
+            CoeffCalculate(N, i, yk, phi, cn);
+            FourierCompute(cn, N, (- h/2. + i* h));
+            outFile << std::setprecision(5) << std::fixed \
+            << std::setw(10) << xk[i] << " " \
+            << std::setw(10) << yk[i] << " " \
+            << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
+        }
+        outFile.close();
+        std::cout << "Information successfully written to file!" << std::endl;
+    } 
+    else {
+        std::cerr << "Error opening file" << std::endl;
+    }
+}

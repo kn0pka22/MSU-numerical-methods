@@ -4,10 +4,10 @@
 
 int main(int argc, char* argv[]){
 
-    int N;
+    int N,k;
 
     if (argc<3 || argc>4){ printf("Please enter argc=4!\n"); return -1;} 
-    if ((sscanf(argv[1], "%d", &N) != 1) || (N<3)){ 
+    if ((sscanf(argv[1], "%d", &N) != 1) || (N<3) || (sscanf(argv[2], "%d", &k)!=1) || ((k==0) && (argc==3))){ 
         std::cout<<"Invalid input!\n \
         * N – number of grid nodes, \n \
         * filename – the name of the file to which the result should be written. This argument is missing if k! = 0.\n\n\
@@ -15,7 +15,8 @@ int main(int argc, char* argv[]){
         or     enter: ./a.out N k(=0) filename  \n";
         return -1;
     }
-    double h = 1/(N-0.5);
+    //int k = atoi(argv[2]);
+    //double h = 1/(N-0.5);
 
     double* xk  = new double[N+1];
     double* yk  = new double[N+1];
@@ -36,19 +37,12 @@ int main(int argc, char* argv[]){
     catch (const std::exception& e){
         std::cerr << "Error: " << e.what() << std::endl;
     }
-    
-
-    std::cout<<"      xk         yk         yk*              "<<std::endl;
-    for (int i = 1; i < N; ++i){
-        CoeffCalculate(N, i, yk, phi, cn);
-        FourierCompute(cn, N, (- h/2. + i* h));
-        std::cout << std::setprecision(5) << std::fixed \
-        << std::setw(10) << xk[i] << " " \
-        << std::setw(10) << yk[i] << " " \
-        << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
-        
+    if (k) WriteToConsole(N, xk, yk, cn, phi);
+    else {
+        std::string filename = argv[3];
+        WriteToFile(filename, N, xk, yk, cn, phi); 
     }
-
+   
     delete[] xk; 
     delete[] yk; 
     delete[] phi; 
