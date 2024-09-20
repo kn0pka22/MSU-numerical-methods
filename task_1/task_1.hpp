@@ -3,28 +3,17 @@
 #include <fstream>
 #include <iomanip>
 
+
+
+
 double f(double x);
 double scalar(double *x, double*y, unsigned int N);
-int    NodesGenerate(double *grid, int N); //генерация узлов
-double Phi(int m, int k, int N);  // функции, вычисляющие и записывающие базисный вектор 
-void   WritePhiTo(int m, int N, double* ph);
-int    CoeffCalculate(int N, double* c_m, double (*f)(double), double* x_k, double* u_k, double* phi);
-double FourierCompute(double* coefs, int N, double x);
-double FullCompute(double x, int N, double* c_m, double (*f)(double), double* nodes, double * u_k, double* phi);
+void   FillingNodes(double* xk, int N); //генерация узлов
+void   FillingValues(double* xk, double* yk, double (*f)(double), int N);
+double PhiCalculate(int n, int k, double h);
+void   PhiVectorCalculate(int N, int k, double* phi);
+double ScalarProduct(double* ar1,double* ar2, int N);
+void   CoeffCalculate(int N, int k, double* yk, double* phi, double* cn);
+double FourierCompute(double* cn, int N, double x);
 
 
-
-// else
-//     {
-//         WriteResult(netmemory, N, cNks, u, fp);
-//         if ((sk = fopen("printAll.gpi", "w+")) == NULL)
-//         {
-//             printf("Не удалось открыть файл");
-            
-//             fclose(fp);
-//             return 0;
-//         }
-//         WriteSkrypt(N, argv[2], sk);
-//         fclose(fp);
-//         fclose(sk);
-//     }
