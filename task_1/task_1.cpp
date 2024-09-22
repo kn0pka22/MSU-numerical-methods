@@ -2,7 +2,7 @@
 
 
 double f(double x){
-    return(sin(M_PI * x));
+    return(x*x*x-1);
 }
 
 
@@ -82,7 +82,7 @@ double FourierCompute(double* cn, int N, double x){
 void WriteToConsole(int N, double* xk, double* yk, double* cn, double* phi){
     double h = 1/(N-0.5);
     std::cout<<"      xk         yk         yk*              "<<std::endl;
-    for (int i = 1; i < N; ++i){
+    for (int i = 1; i < N+1; ++i){
         CoeffCalculate(N, i, yk, phi, cn);
         FourierCompute(cn, N, (- h/2. + i* h));
         std::cout << std::setprecision(5) << std::fixed \
@@ -98,7 +98,7 @@ void WriteToFile(const std::string& filename, int N, double* xk, double* yk, dou
     std::ofstream outFile(filename);
     if (outFile.is_open()) {
         outFile << "      xk         yk         yk*              "<<std::endl;
-        for (int i = 1; i < N; ++i){
+        for (int i = 1; i < N+1; ++i){
             CoeffCalculate(N, i, yk, phi, cn);
             FourierCompute(cn, N, (- h/2. + i* h));
             outFile << std::setprecision(5) << std::fixed \
