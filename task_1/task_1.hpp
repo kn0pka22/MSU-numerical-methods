@@ -17,5 +17,11 @@ double ScalarProduct(double* ar1,double* ar2, int N);
 void   CoeffCalculate(int N, int k, double* yk, double* phi, double* cn);
 double FourierCompute(double* cn, int N, double x);
 
-void WriteToConsole(int N, double* xk, double* yk, double* cn, double* phi);
-void WriteToFile(const std::string& filename, int N, double* xk, double* yk, double* cn, double* phi);
+double NormFunction(double (*f)(double), double* cn, int N);
+//void   PCalculate(int N,double* cn,double* arr_lognorm, double* arr_logh, int NumKnots);
+
+
+void   WriteToConsole(int N, double* xk, double* yk, double* cn, double* phi);
+void   WriteToFile(const std::string& filename, int N, double* xk, double* yk, double* cn, double* phi);
+
+int pcalculate(int N);

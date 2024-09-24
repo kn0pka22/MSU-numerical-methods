@@ -2,7 +2,7 @@
 
 
 double f(double x){
-    return(x*x*x-1);
+    return(x * (1 - x) * cos(x * x));
 }
 
 
@@ -39,14 +39,18 @@ void PhiVectorCalculate(int N, int n, double* phi){  //phi_k^{(n)} for fixed k
     //phi[0] = 0;
     for (int k=1;k<N;++k){
         phi[k] = PhiCalculate(n, k, h);
+        
     }
+    
     //phi[N]=0;
 }
 
 double ScalarProduct(double* ar1,double* ar2, int N){
     double res = 0;
     for (int k=1;k<N; ++k){
+        
         res+=ar1[k] * ar2[k];   //the original scalar product requires multiplication by h, but it cancels out
+        //std::cout<<res<<std::endl;
     }
     return res;
 }
@@ -59,6 +63,7 @@ void CoeffCalculate(int N, int k, double* yk, double* phi, double* cn){
         a = ScalarProduct(yk, phi, N);
         b = ScalarProduct(phi,phi, N);
         cn[n] = a/b;
+        
     }
 }
 
@@ -81,14 +86,14 @@ double FourierCompute(double* cn, int N, double x){
 
 void WriteToConsole(int N, double* xk, double* yk, double* cn, double* phi){
     double h = 1/(N-0.5);
-    std::cout<<"      xk         yk         yk*              "<<std::endl;
+    std::cout<< "         xk                   yk                      yk*              "<<std::endl;
     for (int i = 1; i < N+1; ++i){
         CoeffCalculate(N, i, yk, phi, cn);
         FourierCompute(cn, N, (- h/2. + i* h));
-        std::cout << std::setprecision(5) << std::fixed \
-        << std::setw(10) << xk[i] << " " \
-        << std::setw(10) << yk[i] << " " \
-        << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
+        std::cout << std::setprecision(15) << std::fixed \
+        << std::setw(20) << xk[i] << " " \
+        << std::setw(20) << yk[i] << " " \
+        << std::setw(20) << FourierCompute(cn, N, xk[i]) << std::endl;
         
     }
 }
@@ -97,14 +102,14 @@ void WriteToFile(const std::string& filename, int N, double* xk, double* yk, dou
     double h = 1/(N-0.5);
     std::ofstream outFile(filename);
     if (outFile.is_open()) {
-        outFile << "      xk         yk         yk*              "<<std::endl;
+        outFile << "         xk                   yk                      yk*              "<<std::endl;
         for (int i = 1; i < N+1; ++i){
             CoeffCalculate(N, i, yk, phi, cn);
             FourierCompute(cn, N, (- h/2. + i* h));
-            outFile << std::setprecision(5) << std::fixed \
-            << std::setw(10) << xk[i] << " " \
-            << std::setw(10) << yk[i] << " " \
-            << std::setw(10) << FourierCompute(cn, N, xk[i]) << std::endl;
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << xk[i] << " " \
+            << std::setw(20) << yk[i] << " " \
+            << std::setw(20) << FourierCompute(cn, N, xk[i]) << std::endl;
         }
         outFile.close();
         std::cout << "Information successfully written to file!" << std::endl;
@@ -113,3 +118,21 @@ void WriteToFile(const std::string& filename, int N, double* xk, double* yk, dou
         std::cerr << "Error opening file" << std::endl;
     }
 }
+
+
+//////////////////////////////////////////////////////////////////////
+
+double NormFunction(double (*f)(double), double* cn, int N){
+    double h = 1/10000.;
+    double max = -1;
+    double delt = 0;
+    for (double x = 0.; x < 1.; x += h){
+        delt = fabs(f(x) - FourierCompute(cn,N,x));
+        //std::cout<<delt<<std::endl;
+        if (delt > max)
+            max = delt;
+    }
+    return max;
+}
+
+
