@@ -1,12 +1,13 @@
 CFLAGS = -c -Wall
-TARGET = pcalculate.cpp
-ARGS = 10 
-#.PHONY: all clean
+TARGET = task_1
+ARGS = 20
 
-all: task_1 graphs
+.PHONY: all clean run graphs
 
-task_1: main.o task_1.o pcalculate.o
-	g++ main.o task_1.o pcalculate.o -o task_1
+all: $(TARGET)
+
+$(TARGET): main.o task_1.o pcalculate.o
+	g++ main.o task_1.o pcalculate.o -o $(TARGET)
 
 main.o: main.cpp task_1.hpp
 	g++ $(CFLAGS) main.cpp
@@ -17,11 +18,12 @@ task_1.o: task_1.cpp task_1.hpp
 pcalculate.o: pcalculate.cpp
 	g++ $(CFLAGS) pcalculate.cpp
 
+run: $(TARGET)
+	./$(TARGET) $(ARGS) 0 out.txt
+#jupyter nbconvert --to notebook --execute graph.ipynb --output graph_output.ipynb
+
 graphs: graph.ipynb
 	python3 graph.ipynb
 
 clean:
-	rm -rf *.o task_1
-
-# run: $(TARGET)
-# 	./$(TARGET) $(ARGS)
+	rm -rf *.o $(TARGET) graph_output.ipynb

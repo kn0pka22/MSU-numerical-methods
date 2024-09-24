@@ -2,7 +2,7 @@
 
 
 double f(double x){
-    return(x * (1 - x) * cos(x * x));
+    return((exp(x)-exp(1.0))*sin(x));
 }
 
 
