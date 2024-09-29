@@ -1,0 +1,4 @@
+.o
+.swp
+task_1/*.o
+task_1/.*
