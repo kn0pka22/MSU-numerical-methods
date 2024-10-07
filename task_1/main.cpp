@@ -16,7 +16,7 @@ int main(int argc, char* argv[]){
         return -1;
     }
 
-    //int Numknots = 2;
+    
 
     double* xk        = new double[N+1];
     double* yk        = new double[N+1];
