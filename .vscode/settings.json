@@ -1,9 +1,0 @@
-{
-    "makefile.configureOnOpen": false,
-    "files.associations": {
-        "*.rmd": "markdown",
-        "optional": "cpp",
-        "typeinfo": "cpp",
-        "functional": "cpp"
-    }
-}
