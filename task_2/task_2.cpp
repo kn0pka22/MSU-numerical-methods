@@ -2,8 +2,8 @@
 
 
 double f(double x, double y){
-    //return x * (1 - x) * y * (1 - y) * cos(x * x) * cos(y * y);
-    return x*(1-x)*y*(1-y);
+    return x * (1 - x) * y * (1 - y) * cos(x * x) * cos(y * y);
+    //return x*(1-x)*y*(1-y);
 }
 
 
@@ -29,13 +29,9 @@ void PrintMatrix(const double* matrix, int N, const std::string& name) {
 void FillingUMatrix(int N, double* U, double* xk, double (*f)(double, double)){
     for (int i = 0; i < N+1; ++i){
         for (int j = 0; j < N+1; ++j){
-            //if (i == 0 || i == N-1 || j == 0 || j == N-1)
-            //    U[i * N + j] = 0;
-            //else
             U[i * (N+1) + j] = f(xk[i], xk[j]);
         }
     }
-    //PrintMatrix(U, N+1, "U");
 }
 
 double PhiCalculate(int n, int k, double h){
@@ -53,7 +49,7 @@ double ScalarProduct(double* ar1,double* ar2, int N){  //подумать тут
     double h = 1/((double)N-0.5);
     double res = 0.;
     for (int k=1;k<N; ++k){
-        res+=ar1[k] * ar2[k] * h;  
+        res += ar1[k] * ar2[k] * h;  
     }
     return res;
 }
@@ -70,7 +66,7 @@ void CoeffCalculate(int N, double* yk, double* phi, double* cn){
 }
 
 void FillingDMatrix(int N, double* D, double* U, double* phi){
-    for (int j = 1; j < N; ++j){  //идём по строкам
+    for (int j = 1; j < N; ++j){ 
         D[j * (N+1)] = 0;
         D[j * (N+1) + N] = 0;
         CoeffCalculate(N, U + j * (N+1), phi, D + j * (N+1));
@@ -94,8 +90,8 @@ void FillingCMatrix(int N, double* D, double* C, double* fmemory, double* phi){
 
 double Calc2DFourier(double* C, int N, double x, double y){
     double res = 0;
-    for (int m = 1; m < N+1; ++m){
-        for (int n = 1; n < N+1; ++n){
+    for (int m = 1; m < N; ++m){
+        for (int n = 1; n < N; ++n){
             res += C[m * (N+1) + n] * sin(M_PI * m * x) * sin(M_PI * n* y);
         }
     }
@@ -106,7 +102,7 @@ double Calc2DFourier(double* C, int N, double x, double y){
 
 
 
-void WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi){
+double WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi){
     double h = 1/(N-0.5);
     double xi = 0;
     double yi = 0;
@@ -116,10 +112,16 @@ void WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* 
     <<std::setw(10)<<" "<<"y"<<std::setw(10)<<" "\
     <<std::setw(9)<<" "<<"f(x,y)"<<std::setw(9)<<" "\
     <<std::setw(6)<<" "<<"Fourier "<<std::setw(6)<<" "<<std::endl;
+
+    clock_t start=clock();
     FillingNodes( xk, N);
     FillingUMatrix(N, U, xk, f);
     FillingDMatrix(N, D, U,phi);
     FillingCMatrix(N, D, C, fmemory, phi);
+    clock_t end=clock();
+    double duration =(double)(end-start)/CLOCKS_PER_SEC;
+    
+
     for (int i = 1; i < N-1; ++i){ 
         for (int j = 1; j < N; ++j){ 
             xi = xk[i];
@@ -151,6 +153,7 @@ void WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* 
             << std::setw(20) << Calc2DFourier(C, N, xi, yi) << std::endl;
         }
     }
+    return duration;
 }
 
 

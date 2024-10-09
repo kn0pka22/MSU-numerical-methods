@@ -21,6 +21,6 @@ void FillingCMatrix(int N, double* D, double* C, double *fmemory, double* phi);
 
 double Calc2DFourier(double* C, int N, double x, double y);
 
-void WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi);
+double WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi);
 void  WriteToFile(const std::string& filename, int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi);
 int pcalculate(int N);

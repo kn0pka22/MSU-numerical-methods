@@ -2,7 +2,7 @@
 
 int pcalculate(int N){
 
-    int NumTests = 5;
+    int NumTests = 2;
     int M = (NumTests+1)*N;
     double* xk      = new double[M+1];
     double* fmemory = new double[M+1];
@@ -24,13 +24,13 @@ int pcalculate(int N){
 
     std::ofstream outFile("PDependence.txt");
     for (int i=0; i<NumTests; i+=2){
-        double hForNorm = 1 / ((double)(2*N));
+        double hForNorm = 1 / ((double)(5*N));
         double MaxForNorm = 1e-10;
         double ans = 0;
         double temp = 0;
         for (double x = 0; x < 1; x += hForNorm){
             for (double y = 0; y < 1; y += hForNorm){
-                FillingNodes( xk, N*(i+1));
+                FillingNodes( xk, (N*(i+1)));
                 FillingUMatrix(N*(i+1), U, xk, f);
                 FillingDMatrix(N*(i+1), D, U,phi);
                 FillingCMatrix(N*(i+1), D, C, fmemory, phi);
