@@ -7,14 +7,12 @@ double f(double x){
 
 
 void FillingNodes(double* xk, int N){
-
     double h = 1/(N-0.5);
 
     xk[0] = -h/2.;
-    for (int i=1;i<N+1;++i){
+    for (int i=1;i<N;++i){
         xk[i] = xk[i-1]+h;
     }
-
 }
 
 void FillingValues(double* xk, double* yk, double (*f)(double), int N){
