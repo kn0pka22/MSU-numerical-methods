@@ -17,8 +17,3 @@ void printMatrix(const std::vector<double>& matrix);
 void printVector(const std::vector<double>& vec);
 
 
-// int Michael_Jordan(int n, std::vector<double>& matrica, std::vector<double>& part_b,std::vector<double>& result); //
-// int lead(std::vector<double>& matrica, int n, int j, double z); //
-// void delenie(std::vector<double>& matrica, std::vector<double>& part_b, int n, int i); //
-// void vychitanie(std::vector<double>& matrica, std::vector<double>& part_b, int n, int i);//
-// double norma_matrica(std::vector<double>& matrica, int n);//

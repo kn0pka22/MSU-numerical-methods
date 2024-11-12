@@ -23,6 +23,8 @@ int GenerateEquidistantNodes(double a, double b, std::vector<double>& nodes){
         now += delta;         
     }
     return 0; 
+
+
 }
 
 int GenerateChebyshevNodes(double a, double b, std::vector<double>& nodes){
@@ -65,7 +67,7 @@ void ExtendedValues(std::vector<double>& ExValues, std::vector<double>& ExNodes)
 
 void FillingValues( std::vector<double>& nodes,  std::vector<double>& values, double (*f)(double), int N){
 
-    for (int i=0;i<N+1;++i){
+    for (int i=0;i<N;++i){
         values[i] = f(nodes[i]);
     }
 }
@@ -73,11 +75,13 @@ void FillingValues( std::vector<double>& nodes,  std::vector<double>& values, do
 
 void ExtendedF(std::vector<double>& ExF, const std::vector<double>& result, const std::vector<double>& ExNodes, int MM) {
     for (int i = 0; i < 3 * MM - 2; i++) {
-        double ans = result[1]; 
-        for (int j = 1; j < MM - 1; j++) {
-            ans += result[j+1] * std::pow(ExNodes[i], j); 
-        }
-        ExF[i] = ans; 
+        // double ans = result[1]; 
+        // for (int j = 1; j < MM - 1; j++) {
+        //     ans += result[j+1] * std::pow(ExNodes[i], j); 
+        // }
+        // ExF[i] = ans; 
+        ExF[i] = CalcPolynom(result, ExNodes[i], MM);
+
     }
 }
 
@@ -111,96 +115,197 @@ void CreateSigma(std::vector<double>& sigma, std::vector<double>& nodes, int MM,
     for(int i=0;i<MM;++i){
         sigma[i]=nodes[i*k];
     }
+    //std::cout<<"FIRST CREATED SIGMA: "; printVector(sigma);
 }
 
-double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma, const std::vector<double>& res, const std::vector<double>& valuesAll, int MM, int N){
-    int change = -1, b;
-    double h = res[0]; 
-    double max = std::fabs(h);
+double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma, const std::vector<double>& coeffs, std::vector<double>& values, const std::vector<double>& valuesAll, int MM, int N){
+    double h = coeffs[0]; 
+    //std::cout<<"h   = "<<h<<std::endl;
 
-    //Search for max value
-    for (int i = 0; i < MM - 1; i++) {
-        double d = std::fabs(res[i]);
-        if (d > max) {
-            max = d;
-            change = i;
+    double maxx = std::fabs(h);
+    double res = 0.;
+    double res_old, res_new;
+    int k=0;
+    
+    //We are looking for the maximum deviation in the nodes
+    for(int i=0;i<N;++i){  //phi
+        //std::cout<<"CalcPolynom(coeffs, nodes[i], MM) = "<<CalcPolynom(coeffs, nodes[i], MM)<<std::endl;
+        res = std::fabs(CalcPolynom(coeffs, nodes[i], MM) - valuesAll[i]);
+        if (res > maxx){
+            maxx = std::fabs(res);
+            k=i;
+           
+            //std::cout<<"k=i = "<<k<<std::endl;
         }
     }
+  
+    //std::cout<<"max = "<<maxx<<std::endl;
 
-    // check
-    if ( std::fabs(h)+ 1e-4 > max) {
-        return 0; 
-    }
+    //exit and win!
+    if (std::fabs(h) + 1e-4 > maxx){   
+        //std::cout<<"fabs(h) + 1e-4 > maxx"<<std::endl;
+		return 0;
+	}
     else{
-        if (nodes[change] < sigma[0]) {
-            double a = FindApprox(res, sigma[0], MM);
-            double m = FindApprox(res, nodes[change], MM);
-            double c = f(sigma[0]);
-            if (((a - c < 0) && (m - valuesAll[change] < 0) && (m - valuesAll[change] > 0))) {
-                sigma[0] = nodes[change];
-            } 
-            else{
-                for (int i = 0; i < MM - 1; i++) {
-                    sigma[MM - 1 - i] = sigma[MM - 2 - i];
-                }
-                sigma[0] = nodes[change];
-            }
-        } else if (nodes[change] > sigma[MM - 1]) {
-            double a = FindApprox(res, sigma[MM - 1], MM);
-            double m = FindApprox(res, sigma[change], MM);
-            double c = f(sigma[MM - 1]);
-            if (((a - c < 0) && (m - valuesAll[change] < 0) && (m - valuesAll[change] > 0))) {
-                sigma[MM - 1] = nodes[change];
-            } 
-            else {
-                for (int i = 0; i < MM - 1; i++) {
-                    sigma[i] = sigma[i + 1];
-                }
-                sigma[MM - 1] = nodes[change];
-            }
-            return -1;
-        } 
-        else {
-            b = 0;
-            while (sigma[b] < nodes[change]) {
-                b = b + 1;
-            }
-            double a = FindApprox(res, sigma[b - 1], MM);
-            double m = FindApprox(res, nodes[change], MM);
-            double c = f(sigma[b - 1]);
-            double q = f(nodes[change]);
-            if (((a - c < 0) && (m - q < 0) && (m - q > 0))) {
-                sigma[b - 1] = nodes[change];
-            } else {
-                sigma[b] = nodes[change];
-            }
-            return -1;
-        }
+        //std::cout<<"in else"<<std::endl;
+		if(nodes[k] < sigma[0]){
+            //std::cout<<"case LEFT"<<std::endl;
+
+			res_old = CalcPolynom(coeffs, sigma[0], MM);
+			res_new = CalcPolynom(coeffs, nodes[k], MM);
+            //std::cout<<"k = "<<k<<" and RES_NEW = "<<res_new<<std::endl;
+            //printVector(sigma);
+			
+            if(((res_old - values[0] < 0) && (res_new - valuesAll[k] < 0)) || ((res_old - values[0] > 0) && (res_new - valuesAll[k] > 0))){
+				sigma[0] = nodes[k];
+				values[0] = valuesAll[k]; 
+			}
+			else{
+				// We go in reverse order, because otherwise the values ​​are overwritten
+                //printVector(sigma);
+				for(int i = 0; i < MM - 1; ++i){
+					sigma[MM - i - 1] = sigma[MM - 2 - i];
+					values[MM - i - 1] = values[MM - 2 - i]; 
+				}
+
+
+				sigma[0] = nodes[k];
+				values[0] = valuesAll[k]; 
+
+			}
+            //printVector(sigma);
+			return 1;
+		}
+        else if(nodes[k] > sigma[MM - 1]){
+            //std::cout<<"case RIGHT"<<std::endl;
+
+			res_old = CalcPolynom(coeffs, sigma[MM - 1], MM);
+			res_new = CalcPolynom(coeffs, nodes[k], MM);
+
+            //printVector(sigma);
+           
+
+			if(((res_old - values[MM-1] < 0) && (res_new - valuesAll[k] < 0) ) || ( (res_old - values[MM-1] > 0) && (res_new - valuesAll[k] > 0))){
+				sigma[MM - 1] = nodes[k];
+				values[MM - 1] = valuesAll[k]; 
+                //std::cout<<"HHHHHEEEEEEEERRRRRRRRREEEEEEEE\n";
+			}
+			else{
+				for(int i = 0; i < MM - 1; ++i){
+					sigma[i] = sigma[i + 1];
+					values[i] = values[i + 1]; 
+				}
+				sigma[MM - 1] = nodes[k];
+				values[MM - 1] = valuesAll[k]; 
+			}
+            //printVector(sigma);
+
+			return 1;
+		}
+        else{
+            //std::cout<<"case MIDDLE"<<std::endl;
+            //printVector(values);
+			int b = 0;
+			while(sigma[b] < nodes[k]) b++;
+            //std::cout<<"b = "<<b<<" and MM-1 = "<<MM-1<<std::endl;
+
+			res_old = CalcPolynom(coeffs, sigma[b - 1], MM);
+			res_new = CalcPolynom(coeffs, nodes[k], MM);
+
+            // std::cout<<"res_old = "<<res_old<<std::endl;
+            // std::cout<<"res_new = "<<res_new<<std::endl;
+            // std::cout<<"values[b-1] = "<<values[b-1]<<std::endl;
+            // std::cout<<"valuesAll[k] = "<<valuesAll[k]<<std::endl;
+
+            //printVector(sigma);
+            
+			if(((res_old - values[b-1] < 0) && (res_new - valuesAll[k] < 0) ) || ( (res_old - values[b-1] > 0) && (res_new - valuesAll[k] > 0))){
+				sigma[b - 1] = nodes[k];
+				values[b - 1] = valuesAll[k]; 
+			}
+			else{
+				sigma[b] = nodes[k];
+				values[b] = valuesAll[k]; 
+                //printVector(sigma);
+
+			}
+            //printVector(sigma);
+
+			return 1;
+		}
     }
 }
 
 
-double FindApprox(const std::vector<double>& result, double x, int z) {
-    double ans = 0.0;
-
-    for (int i = 0; i < z; i++) {
-        int power = z - 1 - i; 
-
-        double st = (power > 0) ? 1.0 : 0.0;
-
-        // Если степень больше 0, вычисляем st = x^power
-        if (power > 0) {
-            for (int j = 0; j < power; j++) {
-                st *= x; // Умножаем st на x
-                if (std::fabs(st) < 1e-15) {
-                    st = 0.0; 
-                    break; 
-                }
-            }
-        }
-
-        ans += st * result[i];
+double CalcPolynom(const std::vector<double>& coeffs, double x, int N){
+    double ans = coeffs[1];
+    for (int i = 1; i < N; ++i){
+        double xi = pow(x, i);
+        ans += xi * coeffs[i+1];
     }
 
-    return ans; // Возвращаем результат
+    return ans; 
+}
+
+
+
+void  WriteToFile(double a, double b, const std::string& filename, std::vector<double>& coeffs){
+    std::ofstream outFile(filename);
+    if (outFile.is_open()) {
+        int N = coeffs.size()-1;
+        double h = (b - a) / (double)(3*(N));
+        //h /= 3.;
+        //int M = (double)(N-1)/h;
+        double xi = a-h;
+        double tmp1,tmp2,err;
+
+        outFile<<std::setw(10)<<" "<<"x"<<std::setw(10)<<" "\
+        <<std::setw(9)<<" "<<"f(x)"<<std::setw(9)<<" "\
+        <<std::setw(9)<<" "<<"Pn"<<std::setw(9)<<" "\
+        <<std::setw(9)<<" "<<"err"<<std::setw(9)<<" "<<std::endl;
+        
+        
+        for (int i = 0; i < N; ++i){ 
+            xi += h;  
+            tmp1 = f(xi);
+            tmp2 =  CalcPolynom(coeffs,xi,N);
+            err = std::fabs(tmp1-tmp2);
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << xi   << " " \
+            << std::setw(20) << tmp1 << " " \
+            << std::setw(20) << tmp2 << " " \
+            << std::setw(20) << err  << std::endl;
+            xi += h;   
+            tmp1 = f(xi);
+            tmp2 = CalcPolynom(coeffs,xi,N);
+            err = std::fabs(tmp1-tmp2);
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << xi   << " " \
+            << std::setw(20) << tmp1 << " " \
+            << std::setw(20) << tmp2 << " " \
+            << std::setw(20) << err  << std::endl; 
+            xi += h;   
+            tmp1 = f(xi);
+            tmp2 = CalcPolynom(coeffs,xi,N);
+            err = std::fabs(tmp1-tmp2);
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << xi   << " " \
+            << std::setw(20) << tmp1 << " " \
+            << std::setw(20) << tmp2 << " " \
+            << std::setw(20) << err  << std::endl;  
+
+        }
+        xi += h;  
+            tmp1 = f(xi);
+            tmp2 =  CalcPolynom(coeffs,xi,N);
+            err = std::fabs(tmp1-tmp2);
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << xi   << " " \
+            << std::setw(20) << tmp1 << " " \
+            << std::setw(20) << tmp2 << " " \
+            << std::setw(20) << err  << std::endl;
+    }
+    else {
+        std::cerr << "Error opening file" << std::endl;
+    }
 }

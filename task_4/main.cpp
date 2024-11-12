@@ -13,6 +13,9 @@ int main (int argc, char *argv[]){
      (sscanf(argv[5], "%d", &k)!=1)){ 
         std::cout<<"Invalid input!\n \
         * N – number of grid nodes, \n \
+        * M - degree of polynomial, \n \
+        * [a,b] - segment, \n \
+        * k - any value or 0 for file output, \n \
         * filename – the name of the file to which the result should be written. This argument is missing if k! = 0.\n\n\
         Please enter:\n\
         N, M, a, b, k\n";
@@ -26,8 +29,6 @@ int main (int argc, char *argv[]){
 
 
     std::vector<double> Matrix(MM*MM);
-    std::vector<double> B(MM);
-    //std::vector<double> x(N);   //for what? = Nodes
     std::vector<double> nodes(N);
     std::vector<double> res(MM);
     std::vector<double> ExNodes(3*N-2);
@@ -35,37 +36,15 @@ int main (int argc, char *argv[]){
     std::vector<double> valuesAll(N);
     std::vector<double> ExValues(3*N-2);
     std::vector<double> ExF(3*N-2);
-
     std::vector<double> sigma(MM);
     std::vector<int> memory(M+2);
 
-
-    // std::vector<double> MatrixTest(9);
-    // std::vector<double> BTest(3);
-    // std::vector<int> memoryTest(9);
-    // std::vector<double> resTest(3);
-    // MatrixTest[0] = 1;
-    // MatrixTest[1] = 1;
-    // MatrixTest[2] = 3;
-    // MatrixTest[3] = -1;
-    // MatrixTest[4] = 1;
-    // MatrixTest[5] = 6;
-    // MatrixTest[6] = 1;
-    // MatrixTest[7] = 1;
-    // MatrixTest[8] = 10;
-    // BTest[0]=1;
-    // BTest[1]=2;
-    // BTest[2]=5;
     
-    
-
-   
-
+    std::string filename;
     if (M==N-2){
-        //std::cout << "M = N - 2" << std::endl;
         GenerateEquidistantNodes(a, b, nodes);
         for (int i=0;i<MM;++i){
-                 sigma[i] = nodes[i]; 
+                sigma[i] = nodes[i]; 
         }
         FillingValues(sigma, values, f, M+2);
         MatrixFill(Matrix,sigma);
@@ -74,112 +53,81 @@ int main (int argc, char *argv[]){
         //printVector(ExValues);
 
         if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
+        printVector(res);
+        
 
-        std::string filename= "data.txt"; 
-        std::ofstream outFile(filename); 
-        if (!outFile){
-            std::cerr << "Error opening file!" << std::endl;
-            return -1;
-        }
-        outFile <<" | "<< std::setw(10)<< "Nodes"<< std::setw(8)<<" | "<< std::setw(8)<< "Nodes" << std::setw(8)<<"| Погрешность \n";
-        outFile << "-------------------------------------------------------\n";
+        filename= "data.txt"; 
+        WriteToFile(a, b, filename, res);
 
-        for (int i = 0; i < MM; i++) {
-            if (i == 0){
-                outFile << " | " << std::setw(15) << std::setprecision(15) << (i + 1)
-                        << " | " << std::setw(15) << std::setprecision(15) << sigma[i]
-                        << " | " << std::setw(15) << std::setprecision(15) << res[1] << " \n";
-            }
-            else {
-                outFile << " | " << std::setw(15) << std::setprecision(15) << sigma[i] << " \n";
-            }
-        }
-
-        outFile.close(); 
         ExtendedF(ExF, res, ExNodes, MM);
         std::cout<<"RESIDUAL: "<<delta(ExValues, ExF, MM)<<std::endl;
     
-
-
-        std::string filename2 = "graph.txt"; 
-        std::ofstream outFile2(filename2); 
-        if (!outFile2){
-            std::cerr << "Error opening file!" << std::endl;
-            return -1;
-        }
-        for (int i = 0; i < MM - 1; i++) {
-            outFile2 << std::setprecision(15) << res[i] << std::endl; 
-        }
-        outFile2.close(); 
-
-
-
-        std::string filename3 = "ans.txt"; 
-        std::ofstream outFile3(filename3); 
-        outFile3 << " N | X | Истинное значение | Приближенное значение | Разность \n";
-        outFile3 << "------------------------------------------------------------------------------------------------------\n";
-
-    
-        for (int i = 0; i < 3 * MM - 2; i++) {
-            outFile3 << " | " << std::setw(15) << std::setprecision(15) << (i + 1)
-                    << " | " << std::setw(15) << std::setprecision(15) << ExNodes[i]
-                    << " | " << std::setw(15) << std::setprecision(15) << ExValues[i]
-                    << " | " << std::setw(15) << std::setprecision(15) << ExF[i]
-                    << " | " << std::setw(15) << std::setprecision(15) << (ExValues[i] - ExF[i]) << " \n";
-        }
-
-        outFile3.close(); 
     }
     else if(M<N-2){
-        int cnt = 1;
         GenerateEquidistantNodes(a, b, nodes);
+        //printVector(nodes);
         CreateSigma(sigma, nodes, MM, N);
-        FillingValues(sigma, values, f, M+2);
+        //printVector(sigma);
+        FillingValues(sigma, values, f, MM);
         FillingValues(nodes, valuesAll, f, N);
         MatrixFill(Matrix,sigma);
+
+
+        if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
+        FillingValues(sigma, values, f, MM);
+
+        bool flag = 1;
+        int  iter = 1;
+        while((flag) && (iter < MAX_ITERATIONS)){
+            //std::cout<<"HERE! and num of iteration = "<<iter<<std::endl;
+            flag = MaxDeviation(nodes, sigma, res, values, valuesAll, MM, N);
+            if(flag){
+                MatrixFill(Matrix,sigma);
+                if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
+                FillingValues(sigma, values, f, MM);
+                iter += 1;
+            }
+        }
+        filename= "data.txt"; 
+        WriteToFile(a, b, filename, res);
+
         ExtendedNodes(ExNodes, nodes);
         ExtendedValues(ExValues, ExNodes);
-        if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
-
-        std::string filename = "data.txt"; 
-        std::ofstream outFile(filename); 
-        if (!outFile){
-            std::cerr << "Error opening file!" << std::endl;
-            return -1;
-        }
-        outFile <<" | "<< std::setw(10)<< "Nodes"<< std::setw(8)<<" | "<< std::setw(8)<< "Nodes" << std::setw(8)<<"| Погрешность \n";
-        outFile << "-------------------------------------------------------\n";
-
-        for (int i = 0; i < MM; i++) {
-            if (i == 0){
-                outFile << " | " << std::setw(15) << std::setprecision(15) << (i + 1)
-                        << " | " << std::setw(15) << std::setprecision(15) << sigma[i]
-                        << " | " << std::setw(15) << std::setprecision(15) << res[1] << " \n";
-            }
-            else {
-                outFile << " | " << std::setw(15) << std::setprecision(15) << sigma[i] << " \n";
-            }
-        }
-
-        outFile.close(); 
-        cnt+=1;
         ExtendedF(ExF, res, ExNodes, MM);
-
-        bool finish = 0;
-        while(!finish){
-            
-        }
-        
-
+        std::cout<<"RESIDUAL: "<<delta(ExValues, ExF, MM)<<std::endl;
 
     }
-
-
-    
-            
-
- 
-
 
     return 0;
 }
+
+
+
+
+
+
+
+
+
+
+        // 
+        // std::ofstream outFile(filename); 
+        // if (!outFile){
+        //     std::cerr << "Error opening file!" << std::endl;
+        //     return -1;
+        // }
+        // outFile <<" | "<< std::setw(10)<< "Nodes"<< std::setw(8)<<" | "<< std::setw(8)<< "Nodes" << std::setw(8)<<"| error \n";
+        // outFile << "-------------------------------------------------------\n";
+
+        // for (int i = 0; i < MM; i++) {
+        //     if (i == 0){
+        //         outFile << " | " << std::setw(15) << std::setprecision(15) << (i + 1)
+        //                 << " | " << std::setw(15) << std::setprecision(15) << sigma[i]
+        //                 << " | " << std::setw(15) << std::setprecision(15) << res[1] << " \n";
+        //     }
+        //     else {
+        //         outFile << " | " << std::setw(15) << std::setprecision(15) << sigma[i] << " \n";
+        //     }
+        // }
+
+        // outFile.close(); 
