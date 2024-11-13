@@ -42,12 +42,15 @@ int main (int argc, char *argv[]){
     
     std::string filename;
     if (M==N-2){
-        GenerateEquidistantNodes(a, b, nodes);
+        
+        //GenerateEquidistantNodes(a, b, nodes);
+        GenerateChebyshevNodes(a,b,nodes);
         for (int i=0;i<MM;++i){
                 sigma[i] = nodes[i]; 
         }
         FillingValues(sigma, values, f, M+2);
         MatrixFill(Matrix,sigma);
+        
         ExtendedNodes(ExNodes, nodes);
         ExtendedValues(ExValues, ExNodes);
         //printVector(ExValues);
@@ -71,16 +74,20 @@ int main (int argc, char *argv[]){
         FillingValues(sigma, values, f, MM);
         FillingValues(nodes, valuesAll, f, N);
         MatrixFill(Matrix,sigma);
+        //printMatrix(Matrix);
+        //print();
 
 
         if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
         FillingValues(sigma, values, f, MM);
+       
 
         bool flag = 1;
         int  iter = 1;
         while((flag) && (iter < MAX_ITERATIONS)){
-            //std::cout<<"HERE! and num of iteration = "<<iter<<std::endl;
+           //std::cout<<"HERE! and num of iteration = "<<iter<<std::endl;
             flag = MaxDeviation(nodes, sigma, res, values, valuesAll, MM, N);
+            //flag=0;
             if(flag){
                 MatrixFill(Matrix,sigma);
                 if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
@@ -88,14 +95,16 @@ int main (int argc, char *argv[]){
                 iter += 1;
             }
         }
-        filename= "data.txt"; 
-        WriteToFile(a, b, filename, res);
+        //filename= "data.txt"; 
+        //WriteToFile(a, b, filename, res);
 
         ExtendedNodes(ExNodes, nodes);
         ExtendedValues(ExValues, ExNodes);
         ExtendedF(ExF, res, ExNodes, MM);
         std::cout<<"RESIDUAL: "<<delta(ExValues, ExF, MM)<<std::endl;
 
+   
+        
     }
 
     return 0;
@@ -109,25 +118,3 @@ int main (int argc, char *argv[]){
 
 
 
-
-        // 
-        // std::ofstream outFile(filename); 
-        // if (!outFile){
-        //     std::cerr << "Error opening file!" << std::endl;
-        //     return -1;
-        // }
-        // outFile <<" | "<< std::setw(10)<< "Nodes"<< std::setw(8)<<" | "<< std::setw(8)<< "Nodes" << std::setw(8)<<"| error \n";
-        // outFile << "-------------------------------------------------------\n";
-
-        // for (int i = 0; i < MM; i++) {
-        //     if (i == 0){
-        //         outFile << " | " << std::setw(15) << std::setprecision(15) << (i + 1)
-        //                 << " | " << std::setw(15) << std::setprecision(15) << sigma[i]
-        //                 << " | " << std::setw(15) << std::setprecision(15) << res[1] << " \n";
-        //     }
-        //     else {
-        //         outFile << " | " << std::setw(15) << std::setprecision(15) << sigma[i] << " \n";
-        //     }
-        // }
-
-        // outFile.close(); 

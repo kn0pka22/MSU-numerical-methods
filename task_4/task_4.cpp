@@ -3,6 +3,7 @@
 double f(double x){
     //return((exp(x)-exp(1.0))*sin(x));
     return fabs(x);
+    //return exp(x);
     //return (x*x+sin(x))*cos(3*x);
     //return 1./(1.+25.*x*x); //Runge's function
     //return std::fabs(x);
@@ -83,6 +84,31 @@ void ExtendedF(std::vector<double>& ExF, const std::vector<double>& result, cons
         ExF[i] = CalcPolynom(result, ExNodes[i], MM);
 
     }
+    std::ofstream outFile("data.txt");
+    if (outFile.is_open()) {
+        
+    
+        double tmp1,tmp2,err;
+
+        outFile<<std::setw(10)<<" "<<"x"<<std::setw(10)<<" "\
+        <<std::setw(9)<<" "<<"f(x)"<<std::setw(9)<<" "\
+        <<std::setw(9)<<" "<<"Pn"<<std::setw(9)<<" "\
+        <<std::setw(9)<<" "<<"err"<<std::setw(9)<<" "<<std::endl;
+        
+        int N = ExNodes.size();
+        
+        for (int i = 0; i < N; ++i){ 
+            tmp1 = f(ExNodes[i]);
+            tmp2 =  CalcPolynom(result,ExNodes[i],MM);
+            err = std::fabs(tmp1-tmp2);
+            outFile << std::setprecision(15) << std::fixed \
+            << std::setw(20) << ExNodes[i]   << " " \
+            << std::setw(20) << tmp1 << " " \
+            << std::setw(20) << tmp2 << " " \
+            << std::setw(20) << err  << std::endl;
+
+        }
+    }
 }
 
 
@@ -118,7 +144,7 @@ void CreateSigma(std::vector<double>& sigma, std::vector<double>& nodes, int MM,
     //std::cout<<"FIRST CREATED SIGMA: "; printVector(sigma);
 }
 
-double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma, const std::vector<double>& coeffs, std::vector<double>& values, const std::vector<double>& valuesAll, int MM, int N){
+bool MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma, const std::vector<double>& coeffs, std::vector<double>& values, const std::vector<double>& valuesAll, int MM, int N){
     double h = coeffs[0]; 
     //std::cout<<"h   = "<<h<<std::endl;
 
@@ -126,6 +152,8 @@ double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma
     double res = 0.;
     double res_old, res_new;
     int k=0;
+    
+    //std::cout<<"Nodes now: \n"; printVector(nodes);
     
     //We are looking for the maximum deviation in the nodes
     for(int i=0;i<N;++i){  //phi
@@ -142,7 +170,7 @@ double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma
     //std::cout<<"max = "<<maxx<<std::endl;
 
     //exit and win!
-    if (std::fabs(h) + 1e-4 > maxx){   
+    if (std::fabs(h) + 1e-6 > maxx){   
         //std::cout<<"fabs(h) + 1e-4 > maxx"<<std::endl;
 		return 0;
 	}
@@ -239,12 +267,14 @@ double MaxDeviation(const std::vector<double>& nodes, std::vector<double>& sigma
 
 double CalcPolynom(const std::vector<double>& coeffs, double x, int N){
     double ans = coeffs[1];
-    for (int i = 1; i < N; ++i){
+    for (int i = 1; i < N-1; ++i){
         double xi = pow(x, i);
+        //std::cout<<coeffs[i+1];
         ans += xi * coeffs[i+1];
     }
 
     return ans; 
+    
 }
 
 
@@ -252,11 +282,13 @@ double CalcPolynom(const std::vector<double>& coeffs, double x, int N){
 void  WriteToFile(double a, double b, const std::string& filename, std::vector<double>& coeffs){
     std::ofstream outFile(filename);
     if (outFile.is_open()) {
+        
+        
         int N = coeffs.size()-1;
         double h = (b - a) / (double)(3*(N));
         //h /= 3.;
         //int M = (double)(N-1)/h;
-        double xi = a-h;
+        double xi = a;
         double tmp1,tmp2,err;
 
         outFile<<std::setw(10)<<" "<<"x"<<std::setw(10)<<" "\
@@ -265,7 +297,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
         <<std::setw(9)<<" "<<"err"<<std::setw(9)<<" "<<std::endl;
         
         
-        for (int i = 0; i < N; ++i){ 
+        for (int i = 0; i < N-1; ++i){ 
             xi += h;  
             tmp1 = f(xi);
             tmp2 =  CalcPolynom(coeffs,xi,N);
@@ -304,6 +336,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
             << std::setw(20) << tmp1 << " " \
             << std::setw(20) << tmp2 << " " \
             << std::setw(20) << err  << std::endl;
+
     }
     else {
         std::cerr << "Error opening file" << std::endl;
