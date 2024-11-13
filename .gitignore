@@ -12,3 +12,8 @@ task_3/*.o
 task_3/.
 task_3/task_3
 task_3/*.txt
+
+task_4/*.o
+task_4/.
+task_4/task_4
+task_4/*.txt
