@@ -13,13 +13,20 @@ struct FunctionWithName{
     double TrueRes(double xa, double xb, double ya, double yb);    
 };
 
+double PointFromNumVert(int numVert, int N, double h, char c);
+struct Triangle{
+    //we number the vertices of the triangle clockwise, starting from the upper left vertex (if there is none, then from the upper right vertex)
+    int v1, v2, v3;  
+    Triangle(int v1, int v2, int v3);  
+};
 
-double fun0(double x, double y);
-double fun1(double x, double y);
-double fun2(double x, double y);
-double fun3(double x, double y);
-double fun4(double x, double y);
+ 
+void triangulation(int N, double xa, double xb, double ya, double yb, const std::string &filename);
+double IntegrateQuadr1(int N, double xa, double xb, double ya, double yb, std::function<double(double, double)>& f, const std::string& filename);
+//double IntegrateQuadr2(int N, std::function<double(double, double)> f);
 
-void triangulation(int N, double Lx, double Ly, const std::string &filename);
-double IntegrateQuadr1(int N, std::function<double(double, double)> f);
-double IntegrateQuadr2(int N, std::function<double(double, double)> f);
+
+double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya, double yb, 
+                                FunctionWithName f, int N,
+                                const std::string& fileForTriangulation,
+                                const std::string& fileForP);
