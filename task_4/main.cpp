@@ -56,7 +56,7 @@ int main (int argc, char *argv[]){
         //printVector(ExValues);
 
         if(solve(Matrix, values, res, memory)){ std::cout<<"smth went wrong, maybe singular matrix\n";}
-        printVector(res);
+        //printVector(res);
         
 
         filename= "data.txt"; 

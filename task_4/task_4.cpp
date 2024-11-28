@@ -7,8 +7,8 @@ double f(double x){
     //return (x*x+sin(x))*cos(3*x);
     //return 1./(1.+25.*x*x); //Runge's function
     //return std::fabs(x);
-}
-
+} 
+ 
 int GenerateEquidistantNodes(double a, double b, std::vector<double>& nodes){
     int N = nodes.size();
     if (N < 2 || a >= b) {
@@ -283,7 +283,6 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
     std::ofstream outFile(filename);
     if (outFile.is_open()) {
         
-        
         int N = coeffs.size()-1;
         double h = (b - a) / (double)(3*(N));
         //h /= 3.;
@@ -301,7 +300,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
             xi += h;  
             tmp1 = f(xi);
             tmp2 =  CalcPolynom(coeffs,xi,N);
-            err = std::fabs(tmp1-tmp2);
+            err = (tmp1-tmp2);
             outFile << std::setprecision(15) << std::fixed \
             << std::setw(20) << xi   << " " \
             << std::setw(20) << tmp1 << " " \
@@ -310,7 +309,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
             xi += h;   
             tmp1 = f(xi);
             tmp2 = CalcPolynom(coeffs,xi,N);
-            err = std::fabs(tmp1-tmp2);
+            err = (tmp1-tmp2);
             outFile << std::setprecision(15) << std::fixed \
             << std::setw(20) << xi   << " " \
             << std::setw(20) << tmp1 << " " \
@@ -319,7 +318,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
             xi += h;   
             tmp1 = f(xi);
             tmp2 = CalcPolynom(coeffs,xi,N);
-            err = std::fabs(tmp1-tmp2);
+            err = (tmp1-tmp2);
             outFile << std::setprecision(15) << std::fixed \
             << std::setw(20) << xi   << " " \
             << std::setw(20) << tmp1 << " " \
@@ -330,7 +329,7 @@ void  WriteToFile(double a, double b, const std::string& filename, std::vector<d
         xi += h;  
             tmp1 = f(xi);
             tmp2 =  CalcPolynom(coeffs,xi,N);
-            err = std::fabs(tmp1-tmp2);
+            err = (tmp1-tmp2);
             outFile << std::setprecision(15) << std::fixed \
             << std::setw(20) << xi   << " " \
             << std::setw(20) << tmp1 << " " \
