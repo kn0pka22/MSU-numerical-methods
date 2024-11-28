@@ -15,7 +15,9 @@ struct FunctionWithName{
 
 double PointFromNumVert(int numVert, int N, double h, char c);
 struct Triangle{
-    //we number the vertices of the triangle clockwise, starting from the upper left vertex (if there is none, then from the upper right vertex)
+    //we number the vertices of the triangle counterclockwise, starting from the lower left vertex (if there is none, then from the lower right vertex)
+    // . _ . \ . |
+    // . | . - . "\"
     int v1, v2, v3;  
     Triangle(int v1, int v2, int v3);  
 };

@@ -10,6 +10,7 @@ Triangle::Triangle(int v1, int v2, int v3){
 
 double PointFromNumVert(int numVert, int N, double h, char c){
     double res = (c == 'x') ? (((numVert-1) % (N + 1)) * h ) : (((numVert-1) / (N + 1)) * h);   
+    //std::cout<<"c = "<<c<<" numVert = "<<numVert<<" N = "<<" res = "<<res<<std::endl;
     return res;
 }
 
@@ -207,6 +208,7 @@ double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya
         N++; 
 
     }
+    //std::cout<<N<<std::endl;
 
     fout.close();
 
