@@ -161,6 +161,59 @@ double IntegrateQuadr1(int N, double xa, double xb, double ya, double yb, std::f
 
 
 
+double IntegrateQuadr2(int N, double xa, double xb, double ya, double yb, std::function<double(double, double)>& f, const std::string& filename){
+
+    double res = 0.;
+
+    double hx = (xb-xa) / (double)N;
+    double hy = (yb-ya) / (double)N;
+
+    std::ifstream file(filename);
+    if (!file.is_open()) {
+        std::cerr << "Error opening file for reading!" << std::endl;
+        return 1;
+    }
+
+    std::string line;
+    bool readingTriangles = false;
+    std::vector<Triangle> triangles;  
+
+    while (getline(file, line)) {
+        // We are looking for the line "num of triangles: .." or similar
+        if (line.find("num of triangles:") != std::string::npos) {
+            readingTriangles = true;  
+            continue;  
+        }
+
+        if (readingTriangles) {
+            std::stringstream ss(line);
+            int v1, v2, v3;
+            if (ss >> v1 >> v2 >> v3) {
+                triangles.push_back(Triangle(v1, v2, v3));
+            }
+        }
+    }
+
+    file.close();  
+
+    double x, y;
+    for (int i = 0; i < triangles.size(); ++i){
+        res += 0.5 * hx * hy * ((f (   (PointFromNumVert(triangles[i].v1, N, hx, 'x') + PointFromNumVert(triangles[i].v2, N, hx, 'x'))/2.,
+                                    (PointFromNumVert(triangles[i].v1, N, hy, 'y') + PointFromNumVert(triangles[i].v2, N, hy, 'y'))/2.) +
+                                    f ((PointFromNumVert(triangles[i].v1, N, hx, 'x') + PointFromNumVert(triangles[i].v3, N, hx, 'x'))/2.,
+                                    (PointFromNumVert(triangles[i].v1, N, hy, 'y') + PointFromNumVert(triangles[i].v3, N, hy, 'y'))/2.) +
+                                    f ((PointFromNumVert(triangles[i].v2, N, hx, 'x') + PointFromNumVert(triangles[i].v3, N, hx, 'x'))/2.,
+                                    (PointFromNumVert(triangles[i].v2, N, hy, 'y') + PointFromNumVert(triangles[i].v3, N, hy, 'y'))/2.))
+                                    /3.);
+    }
+    
+
+    return res;
+}
+
+
+
+
 double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya, double yb, 
                                 FunctionWithName f, int N,
                                 const std::string& fileForTriangulation,
@@ -221,41 +274,5 @@ double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya
     return p;
 }
 
-
-// double IntegrateQuadr2(int N, std::function<double(double, double)> f) {
-//     double ans = 0.0;
-//     double v1_x, v1_y, v2_x, v2_y, v3_x, v3_y;
-//     double h = 1.0 / double(N);
-
-//     for (int i = 1; i < N+1; ++i){  
-//         for (int j = 1; j < N+1; ++j){  
-//             v1_x = (i - 1) * h;
-//             v1_y = (j - 1) * h;
-//             v2_x = v1_x + h;
-//             v2_y = v1_y;
-//             v3_x = v1_x;
-//             v3_y = v1_y + h;
-
-            
-//             ans += 0.5 * h * h * (f((v1_x + v2_x) / 2.0, (v1_y + v2_y) / 2.0) +
-//                                   f((v1_x + v3_x) / 2.0, (v1_y + v3_y) / 2.0) +
-//                                   f((v3_x + v2_x) / 2.0, (v3_y + v2_y) / 2.0)) / 3.0;
-
-//             // The second triangle in the cell
-//             v1_x = (i) * h;
-//             v1_y = (j) * h;
-//             v2_x = v1_x - h;
-//             v2_y = v1_y;
-//             v3_x = v1_x;
-//             v3_y = v1_y - h;
-
-//             ans += 0.5 * h * h * (f((v1_x + v2_x) / 2.0, (v1_y + v2_y) / 2.0) +
-//                                   f((v1_x + v3_x) / 2.0, (v1_y + v3_y) / 2.0) +
-//                                   f((v3_x + v2_x) / 2.0, (v3_y + v2_y) / 2.0)) / 3.0;
-//         }
-//     }
-
-//     return ans;
-// }
 
 

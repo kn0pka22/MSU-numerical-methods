@@ -25,8 +25,7 @@ struct Triangle{
  
 void triangulation(int N, double xa, double xb, double ya, double yb, const std::string &filename);
 double IntegrateQuadr1(int N, double xa, double xb, double ya, double yb, std::function<double(double, double)>& f, const std::string& filename);
-//double IntegrateQuadr2(int N, std::function<double(double, double)> f);
-
+double IntegrateQuadr2(int N, double xa, double xb, double ya, double yb, std::function<double(double, double)>& f, const std::string& filename);
 
 double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya, double yb, 
                                 FunctionWithName f, int N,

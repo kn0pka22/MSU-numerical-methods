@@ -30,10 +30,10 @@ int main(int argc, char* argv[]){
         {4, [](double x, double y) { return x * y; }, "f(x, y) = x * y"},
         {5, [](double x, double y) { return sin(x * y); }, "f(x, y) = sin(x * y)"}
     };
-    int num=2;
+    int num=2 ;
     
     triangulation(N, xa, xb, ya, yb, "out.txt");
-    std::cout<<"Quadrature =    "<<IntegrateQuadr1(N, xa, xb, ya, yb, functions[num].func, "out.txt")<<std::endl;
+    std::cout<<"Quadrature =    "<<IntegrateQuadr2(N, xa, xb, ya, yb, functions[num].func, "out.txt")<<std::endl;
     std::cout<<"Analytical =    "<<functions[num].TrueRes(xa, xb, ya, yb)<<std::endl;
     
     int numTests = 10;
