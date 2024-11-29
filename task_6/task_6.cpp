@@ -215,7 +215,7 @@ double IntegrateQuadr2(int N, double xa, double xb, double ya, double yb, std::f
 
 
 double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya, double yb, 
-                                FunctionWithName f, int N,
+                                FunctionWithName f, int N, int numOfQuadr,
                                 const std::string& fileForTriangulation,
                                 const std::string& fileForP){
 
@@ -245,7 +245,7 @@ double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya
     for(int i = 0; i < numTests; ++i){
 
         triangulation(N, xa, xb, ya, yb, fileForTriangulation);
-        res1 = IntegrateQuadr1(N, xa, xb, ya, yb, f.func, fileForTriangulation);
+        res1 = IntegrateQuadr2(N, xa, xb, ya, yb, f.func, fileForTriangulation);
         res2 = f.TrueRes(xa, xb, ya, yb); 
         err1 = fabs(res1-res2);
         errVec.push_back(err1);

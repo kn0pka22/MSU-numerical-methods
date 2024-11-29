@@ -28,6 +28,6 @@ double IntegrateQuadr1(int N, double xa, double xb, double ya, double yb, std::f
 double IntegrateQuadr2(int N, double xa, double xb, double ya, double yb, std::function<double(double, double)>& f, const std::string& filename);
 
 double GenereteFileForPCalculation(int numTests, double xa, double xb, double ya, double yb, 
-                                FunctionWithName f, int N,
+                                FunctionWithName f, int N, int numOfQuadr,
                                 const std::string& fileForTriangulation,
                                 const std::string& fileForP);
