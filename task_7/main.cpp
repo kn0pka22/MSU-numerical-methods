@@ -14,57 +14,76 @@ int main(int argc, char *argv[]){
         N, p"<<std::endl;
         return -1;
     }
-
-    std::vector<double> A((N + 1) * (N + 1), 0.0);
-    std::vector<double> b(N + 1, 0.0);
-    std::vector<double> x(N + 1, 1.);
-    std::vector<double> bCheck(N + 1, 0.0);
-    std::vector<double> mem(N + 1, 0.0);
-
-   
-    MatrixFill(p, A);
-    //printMatrix(A);
-    RightSideFill(A, b);
-    //b[0]=b[N]=0; 
-    //printVector(b);
-
-    FourierMethod(x, N, p, b);
     
-    // //check:
-    // bCheck = MultiplyMatrixByVector(A, x);
-    // printVector(b);
-    // printVector(bCheck);  //correct
 
+    std::vector<double> Nodes(N + 1);
+    std::vector<double> BasicNodes(N - 1);
     
-    double m = Lambdan(1, N + 1, p);
-    double M = Lambdan(N, N + 1, p);
-    double tau = 2. / (m + M);
+    std::vector<double> ValuesInNodes(N + 1);
+    std::vector<double> ValuesInBasicNodes(N - 1);
 
-    double q = (M - m) / (M + m);
+    std::vector<double> BasicMatrix((N - 1) * (N - 1));
+    std::vector<double> FullMatrix((N + 1) * (N + 1));
+
+    std::vector<double> x(N - 1);
+    std::vector<double> Fullx(N + 1);
+
+    std::vector<double> mem(N - 1 );
+
+
+
+
+
+    FillingNodes(Nodes);
+    FillingBasicNodes(BasicNodes);
+    FillingValues(Nodes, ValuesInNodes, f);
+    FillingValues(BasicNodes, ValuesInBasicNodes, f);
+    //printVector(ValuesInBasicNodes);
+ 
+    BasisMatrixFill(p, BasicMatrix);
+    FullMatrixFill(p, FullMatrix);
+    //printMatrix(FullMatrix);
+    //printMatrix(Matrix);
+
+
+    Fourier(x, p, ValuesInBasicNodes);
+    Fullx[0] = -x[0];
+    for (int i=0;i<N-1;++i){
+        Fullx[i+1] = x[i];
+    }
+    Fullx[N] = 0.;
+
+
+ 
+    //std::cout<<"check: "<<std::endl; <- correct
+    //printVector(MultiplyMatrixByVector(FullMatrix, Fullx));
+    //printVector(ValuesInNodes);
+ 
+//============================================================
+    
+    double EigenValueMin = Lambda(1, N, p);
+    double EigenValueMax = Lambda(N-1, N, p);
+    
+    double tau = 2. / (EigenValueMin + EigenValueMax);
+    double q = (EigenValueMax - EigenValueMin) / (EigenValueMax + EigenValueMin);
     double dq = 1;
 
 
-    std::string filename = "inp.txt";
-    std::ofstream file(filename);
-    if (!file.is_open()) {
-        std::cerr << "Error opening file for reading!" << std::endl;
-        return 1;
-    }
-    file<< std::left 
-        << std::setw(15) << "N" 
-        << std::setw(20) << "Eps" 
-        << std::setw(20) << "dq*fnorm" 
-        << std::endl;
-    double fnorm = Richardson(x, A, b, tau, N, 0, mem);
-    double eps = 0.;
-    for (int n = 0; n < m; n += 1){
-        eps = Richardson(x, A, b, tau, N, n, mem);
-        file << std::left 
-             << std::setw(15) << std::fixed << std::setprecision(10) << n
-             << std::setw(20) << std::fixed << std::setprecision(10) << eps
-             << std::setw(20) << std::fixed << std::setprecision(10) << dq * fnorm
-             << std::endl;
-        dq *= q;
-    }
+    std::string filename = "out.txt";
+    int mIter = 300;
+    WriteResultsToFile(filename, x, BasicMatrix, ValuesInBasicNodes,
+                       tau, N, mIter, dq, q, mem);
+//============================================================
+
+
+    // std::vector<double> Matrix(N - 1);
+    // std::vector<double> mem1(N - 1);
+    // std::vector<double> B(N - 1);
+    // std::vector<double> b(N - 1);
+
+
+    //double epss = BSolver(x, Matrix, B, b, tau, 4, mIter, mem, mem1);
+
+
     return 0;
 }
