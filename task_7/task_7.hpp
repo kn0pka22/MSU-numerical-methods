@@ -4,7 +4,7 @@
 #include <fstream>
 #include <cmath>
 #include <functional>
-
+ 
 
 double f(double x);
 void printMatrix(const std::vector<double>& matrix);
@@ -35,7 +35,15 @@ void WriteResultsToFile(const std::string& filename, std::vector<double>& x,
                         double tau, int N, int m, double dq, double q, std::vector<double>& mem);
 
 
-double BSolver( std::vector<double>& x, std::vector<double>& A, std::vector<double>& B, std::vector<double>& b, double tau,int n, int mIter, std::vector<double>& mem, std::vector<double>& mem1) ;
+// void BasisMatrixFillWithVariableP(std::vector<double>& M);
+double BasisMatrixFillWithVariableP(std::vector<double>& M);
 
-double ErNormInf(std::vector<double>& A, std::vector<double>& b, std::vector<double>& x, int N, std::vector<double>& mem);
+//double BSolver( std::vector<double>& x, std::vector<double>& A, std::vector<double>& B, std::vector<double>& b, double tau,int n, int mIter, std::vector<double>& mem, std::vector<double>& mem1, double p);
+//double ErNormInf(std::vector<double>& A, std::vector<double>& b, std::vector<double>& x, int N, std::vector<double>& mem);
+double SearchQ(std::vector<double>& A);
 
+double BSolver( std::vector<double>& x, std::vector<double>& A, 
+                std::vector<double>& B, std::vector<double>& b, 
+                double tau, int mIter, std::vector<double>& mem, 
+                std::vector<double>& mem1, double p);
+double ErNormInf(std::vector<double>& A, std::vector<double>& b, std::vector<double>& x, std::vector<double>& mem);

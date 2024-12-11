@@ -1,9 +1,10 @@
 #include "task_7.hpp"
 
 double f(double x) {
-    //return sin(M_PI * x);
-    return x*x;
-}
+    return sin( M_PI * x);
+    //return x*(x-1);
+    
+} 
 
 void printMatrix(const std::vector<double>& matrix) {
     int n = sqrt(matrix.size());
@@ -12,7 +13,7 @@ void printMatrix(const std::vector<double>& matrix) {
             std::cout << std::setw(10) << std::setprecision(4) << matrix[i * n + j] << " ";
         }
         std::cout << std::endl;
-    }
+    } 
 }
 
 
@@ -139,6 +140,7 @@ void BasisMatrixFill(double p, std::vector<double>& M){
             }
         }
     }
+    M[0] = 3.* (double)((N-0.5) * (N-0.5)) + p;
 }
 
 void FullMatrixFill(double p, std::vector<double>& M){
@@ -158,7 +160,14 @@ void FullMatrixFill(double p, std::vector<double>& M){
             }
         }
     }
-    M[0]= p + 3.0 * (double)((N-0.5) * (N-0.5));
+    M[1*(N+1)+1]= p + 3.0 * (double)((N-0.5) * (N-0.5));
+    M[0*(N+1)+0]= 1./2.;
+    M[0*(N+1)+1]= 1./2.;
+    M[N*(N+1)+N]= 1.;
+    M[1*(N+1)+0]= 0.;
+    M[N*(N+1)+N-1]= 0.;
+    M[(N-1)*(N+1)+N]= 0.;
+
 }
 
 
@@ -220,36 +229,123 @@ void WriteResultsToFile(const std::string& filename, std::vector<double>& x,
 }
 
 
-double BSolver( std::vector<double>& x, std::vector<double>& A, std::vector<double>& B, std::vector<double>& b, double tau,int n, int mIter, std::vector<double>& mem, std::vector<double>& mem1) {
+double BSolver( std::vector<double>& x, std::vector<double>& A, 
+                std::vector<double>& B, std::vector<double>& b, 
+                double tau, int mIter, std::vector<double>& mem, 
+                std::vector<double>& mem1, double p) {
 
+    int N = x.size(); //N-1
+    N++;
+
+    for (int k = 0; k < N-2; ++k){
+        x[k] = 0;
+        mem[k] = 0;
+    }
     for (int m = 0; m < mIter; ++m) {
         mem = MultiplyMatrixByVector(A, x);
         
         // b - Ax
-        for (int j = 0; j < n; ++j) {
+        for (int j = 0; j < N-2; ++j) {
             mem[j] = b[j] - mem[j];
         }
-        mem1 = MultiplyMatrixByVector(B, mem);
+        Fourier(mem1, p, mem);
+        //mem1 = MultiplyMatrixByVector(B, mem);
 
-        for (int i = 0; i < n; ++i) {
+        for (int i = 0; i < N-2; ++i) {
             x[i] += tau * mem1[i];
         }
     }
 
-    return ErNormInf(A, b, x, n, mem);
+    return ErNormInf(A, b, x, mem);
 }
 
 
-double ErNormInf(std::vector<double>& A, std::vector<double>& b, std::vector<double>& x, int N, std::vector<double>& mem)
-{
+double ErNormInf(std::vector<double>& A, std::vector<double>& b, std::vector<double>& x, std::vector<double>& mem){
+
+    int N = x.size(); //N-1
+    N++;
     double ans = 0;
+    
 
-    MultiplyMatrixByVector(A, x);
+    mem = MultiplyMatrixByVector(A, x);
 
-    for (int i = 0; i < N; i++)
-    {
+    for (int i = 0; i < N-2; i++){
         if(fabs((b[i] - mem[i])) > ans) ans = fabs((b[i] - mem[i]));
     }
 
     return sqrt(ans);
+}
+
+
+double BasisMatrixFillWithVariableP(std::vector<double>& M) {
+    int N = sqrt(M.size()); //N-1
+    N++;
+    double mean = 0;
+    double pk;
+    for (int i = 0; i < N-1; ++i) {
+        //pk = sin(M_PI * (i - 1./2.) / (N - 0.5));
+        pk = sin(M_PI * i / (N - 0.5));
+        for (int j = 0; j < N-1; ++j) {
+            if (i == j){
+                M[i * (N - 1) + j] = 2.0 * (double)((N-0.5) * (N-0.5)) + 1.+pk*pk;
+            } 
+            else if ((i - j == 1 || i - j == -1)){
+                M[i * (N - 1) + j] = -(double)((N-0.5) * (N-0.5));
+            } 
+            else{
+                M[i * (N - 1) + j] = 0.0;
+            }
+        }
+        mean += pk*pk+1.;
+    }
+    mean/=(N-2);
+    pk = sin(M_PI * 0 / (N - 0.5));
+    M[0] = 3.* (double)((N-0.5) * (N-0.5)) + 1.+pk*pk;
+    return mean;
+
+}
+
+double SearchQ(std::vector<double>& A){
+    int N = sqrt(A.size()); //N-1
+    N++;
+
+    // double max = 0.;
+    // double min = 0.;
+    // double sum = 0.;
+    // for (int i = 0; i < N-2; ++i){
+    //     sum = 0.;
+    //     for (int j = 0; j < N-2; ++j){
+    //         sum += fabs(A[i * (N-2) + j]);
+    //     }
+    //     if(i == 0) min = 2 * A[i * (N-2) + i] - sum;
+        
+    //     if (sum > max) max = sum;
+
+    //     if (2 * A[i * (N-2) + i] - sum < min) min = 2 * A[i * (N-2) + i] - sum;
+    // }
+    // return (double)(max - min) / (double)(max + min);
+
+    double sum = 0;
+    double qMax = 0;
+    double q;
+    for (int i = 0; i < N-1; ++i){
+        sum = 0.;
+        for (int j = 0; j < N-1; j++){
+            if(j != i) sum += fabs(A[i * (N-1) + j]);;
+        }
+        //printMatrix(A);
+        //std::cout<<sum<<" "<<fabs(A[i * (N-1) + i])<<std::endl<<std::endl;
+        q = sum / fabs(A[i * (N-1) + i]);
+        // if(q > 1){
+        //     std::cout<<"bad q, would haven't conv\n"<<std::endl;
+        //     return 0;
+        // }
+        if(i == 0){
+            qMax = q;
+        }
+        if (q > qMax){
+            qMax = q;
+        }
+    }
+    return qMax;
 }

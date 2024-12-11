@@ -1,4 +1,4 @@
-CFLAGS = -c #-Wall
+CFLAGS = -c -Wall
 TARGET = task_7
 ARGS = 20
 
