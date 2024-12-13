@@ -2,34 +2,36 @@
 *.exe
 .swp
 .vscode/
-task_1/*.o
-task_1/.*
-task_2/*.o
-task_2/.*
-task_1/task_1
-task_2/task_2
+task_1 (Fourier 1d)/task_1
+task_1 (Fourier 1d)/*.o
+task_1 (Fourier 1d)/.*
+task_2 (Fourier 2d)/*.o
+task_2 (Fourier 2d)/.*
+task_1 (Fourier 1d)/task_1
+task_2 (Fourier 2d)/task_2
 
-task_3/*.o
-task_3/.
-task_3/task_3
-task_3/*.txt
+task_3 (Polynom Interpolation)/*.o
+task_3 (Polynom Interpolation)/.
+task_3 (Polynom Interpolation)/task_3
+task_3 (Polynom Interpolation)/*.txt
 
-task_4/*.o
-task_4/.
-task_4/task_4
-task_4/*.txt
-
-
-task_5/*.o
-task_5/.
-task_5/task_5
-task_5/*.txt
+task_4 (Vallée Poussin)/*.o
+task_4 (Vallée Poussin)/.
+task_4 (Vallée Poussin)/task_4
+task_4 (Vallée Poussin)/*.txt
 
 
-task_6/*.o
-task_6/.
-task_6/task_6
+task_5 (Integration 1d)/*.o
+task_5 (Integration 1d)/.
+task_5 (Integration 1d)/task_5
+task_5 (Integration 1d)/*.txt
 
-task_7/task_7
-task_7/*.o
+
+task_6 (Integration 2d)/*.o
+task_6 (Integration 2d)/.
+task_6 (Integration 2d)/task_6
+
+task_7 (Lin Alg)/task_7
+task_7 (Lin Alg)/*.o
+task_7 (Lin Alg)/.
 
