@@ -91,17 +91,19 @@ int main(int argc, char *argv[]){
     BasisMatrixFill(pp, BasicMatrixB); //B
 
     //std::cout<<"pp = "<<pp<<std::endl;
-
+     int numberTest = 300;
+    //double q0 =SearchQ(BasicMatrixA);
+    double q0 = q;
     double resid0 = BSolver(x, BasicMatrixA, BasicMatrixB, ValuesInBasicNodes, tau, 1, mem, mem1, pp); //for x^0
     //std::cout << "resid0 = " << resid0 << std::endl;
-    fout << "0  " << resid0 << " " << q * resid0 << "\n";
+    fout << "0  " << resid0 << " " << q0 * resid0 << "\n";
     double resid;
 
     //printMatrix(BasicMatrixA);
     //printMatrix(BasicMatrixB);
     
-    int numberTest = 300;
-    double q0 =SearchQ(BasicMatrixA);    
+   
+    //q = q0;    
     //std::cout << "q0 = " << q0 << std::endl;
 
     // for(int i = 0; i < N-1; i++)
@@ -112,11 +114,11 @@ int main(int argc, char *argv[]){
     
     tau = 1.;
     fout << std::fixed << std::setprecision(15);
-    for (int iter = 2; iter < numberTest+2; iter+=1){
+    for (int iter = 0; iter < numberTest+2; iter+=1){
         resid = BSolver(x, BasicMatrixA, BasicMatrixB, ValuesInBasicNodes, tau, iter, mem, mem1, pp); 
         //std::cout << "for iter = " << iter << " started" << std::endl;
-        fout << iter << " " << resid << " " << q * resid0 << "\n";
-        q *= q0;
+        fout << iter << " " << resid << " " << q0 * resid0 << "\n";
+        q0 *= q0;
     }
     fout.close();
     

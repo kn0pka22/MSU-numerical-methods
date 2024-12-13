@@ -1,8 +1,9 @@
 #include "task_7.hpp"
 
 double f(double x) {
-    return sin( M_PI * x);
-    //return x*(x-1)*x*x*x;
+    //return sin( M_PI * x);
+    //return cos( x);
+    return x*x*x*exp(x);
     //int N=5;
     //return sin(M_PI * 1 * (x-1./2.) / (double)(5-0.5));
     
