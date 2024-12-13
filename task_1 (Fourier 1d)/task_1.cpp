@@ -2,7 +2,8 @@
 
 
 double f(double x){
-    return((exp(x)-exp(1.0))*sin(x));
+    //return((exp(x)-exp(1.0))*sin(x));
+    return sin(7*M_PI*x);
 }
 
 

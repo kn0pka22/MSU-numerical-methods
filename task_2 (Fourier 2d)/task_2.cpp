@@ -2,8 +2,9 @@
 
 
 double f(double x, double y){
-    return x * (1 - x) * y * (1 - y) * cos(x * x) * cos(y * y);
+    //return x * (1 - x) * y * (1 - y) * cos(x * x) * cos(y * y);
     //return x*(1-x)*y*(1-y);
+    return(sin(3*M_PI*x)*sin(3*M_PI*y));
 }
 
 
@@ -92,7 +93,7 @@ double Calc2DFourier(double* C, int N, double x, double y){
     double res = 0;
     for (int m = 1; m < N; ++m){
         for (int n = 1; n < N; ++n){
-            res += C[m * (N+1) + n] * sin(M_PI * m * x) * sin(M_PI * n* y);
+            res += C[m * (N+1) + n] * sin(M_PI * n * x) * sin(M_PI * m * y);
         }
     }
     return res;
@@ -103,7 +104,7 @@ double Calc2DFourier(double* C, int N, double x, double y){
 
 
 double WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi){
-    double h = 1/(N-0.5);
+    //double h = 1/(N-0.5);
     double xi = 0;
     double yi = 0;
     double deltax = 0;
@@ -160,7 +161,7 @@ double WriteToConsole(int N, double* xk, double* U, double* C, double* D, double
 void  WriteToFile(const std::string& filename, int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi){
     std::ofstream outFile(filename);
     if (outFile.is_open()) {
-        double h = 1/(N-0.5);
+        //double h = 1/(N-0.5);
         double xi = 0;
         double yi = 0;
         double deltax = 0;
@@ -210,26 +211,18 @@ void  WriteToFile(const std::string& filename, int N, double* xk, double* U, dou
     }
 }
 
-
-// void WriteToFile(const std::string& filename, int N, double* xk, double* yk, double* cn, double* phi) {
-//     double h = 1/(N-0.5);
-//     std::ofstream outFile(filename);
-//     if (outFile.is_open()) {
-//         outFile << "         xk                   yk                      yk*              "<<std::endl;
-//         for (int i = 1; i < N+1; ++i){
-//             //CoeffCalculate(N, yk, phi, cn);
-//             //FourierCompute(cn, N, (- h/2. + i* h));
-//             outFile << std::setprecision(15) << std::fixed \
-//             << std::setw(20) << xk[i] << " " \
-//             << std::setw(20) << yk[i] << " " \
-//             << std::setw(20) << Calc2DFourier(cn, N, xk[i]) << std::endl;
-//         }
-//         outFile.close();
-//         std::cout << "Information successfully written to file!" << std::endl;
-//     } 
-//     else {
-//         std::cerr << "Error opening file" << std::endl;
-//     }
-
-
-//}
+double normFunction(double (*f)(double, double), double *C, int N){
+    double h = 1./100.;
+    double max = -1.;
+    double delta = 0.;
+    for (double x = 0.; x < 1.; x += h){
+        for (double y = 0.; y < 1.; y += h){
+            delta = fabs(f(x, y) - Calc2DFourier(C,N, x, y));
+            //std::cout<<delta<<std::endl;
+            if (delta > max)
+                max = delta;
+            //if (max>0.5) break;
+        }
+    }
+    return max;
+}

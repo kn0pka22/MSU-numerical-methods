@@ -24,3 +24,4 @@ double Calc2DFourier(double* C, int N, double x, double y);
 double WriteToConsole(int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi);
 void  WriteToFile(const std::string& filename, int N, double* xk, double* U, double* C, double* D, double* fmemory, double* phi);
 int pcalculate(int N);
+double normFunction(double (*f)(double, double), double *C, int N);

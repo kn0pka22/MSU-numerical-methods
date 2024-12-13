@@ -52,6 +52,8 @@ int main(int argc, char* argv[]){
         std::string filename = argv[3];
         WriteToFile(filename, N, xk, yk, cn, phi); 
     }
+    std::cout<<"NORM = "<<NormFunction(f,cn, N)<<std::endl;
+
 
     // for (int i = 1; i < N+1; ++i){
     //     //std::cout<<cnForP[i]<<std::endl;

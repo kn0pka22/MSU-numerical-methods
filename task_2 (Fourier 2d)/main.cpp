@@ -30,7 +30,12 @@ int main(int argc, char *argv[]){
 	 	return -1;
     }
 
-    if (k>0) std::cout<<"DURATION (fToC)= "<<WriteToConsole(N, xk, U, C, D, fmemory, phi)<<std::endl;
+
+    if (k>0){ 
+        //std::cout<<"DURATION (fToC)= "<<WriteToConsole(N, xk, U, C, D, fmemory, phi)<<std::endl;
+        double err1 = normFunction(f, C, N);
+        std::cout << "err1 = " << fabs(err1) << std::endl;
+    }
     else if (!k) {
         std::string filename = argv[3];
         WriteToFile(filename, N, xk, U, C, D, fmemory, phi); 
