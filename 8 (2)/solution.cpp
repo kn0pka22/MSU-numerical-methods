@@ -130,7 +130,10 @@ void MultiplicationByFourier(double *vector, double *res, int N, double p){
 
 // Умножение вектора на матрицу Фурье с постоянной добавкой p и добавками pk на диагонали (Умножение на матрицу A)
 void MultiplicationByA(double *vector, double *res, int N, double *pk, double p){
-    for (int i = 1; i < N+1; i++){
+
+
+    //на вход получилиNn-1
+    for (int i = 1; i < N; i++){
         if (i == 1){
             res[i-1] = (pk[i-1] + p + double((N-1)*(N-1))) * vector[i-1]  - double((N-1)*(N-1)) * vector[i];
         }

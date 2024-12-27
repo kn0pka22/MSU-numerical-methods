@@ -1,10 +1,9 @@
 #include<iostream>
 #include <fstream>
 #include "solution.hpp"
-
 int main(){
 
-    int N = 5;
+    int N = 10;
     // double h = 1. / (double)(N-1);
     double p = 1.;
     // int mIter = 300; 
@@ -104,7 +103,7 @@ int main(){
     
     //double tau = 2. / (EigenValueMin + EigenValueMax);
 
-    double tau = 1;
+    double tau = 0.5;
 
     double q = (EigenValueMax - EigenValueMin) / (EigenValueMax + EigenValueMin);
     //double q = SearchQ(BasicMatrix, N);
