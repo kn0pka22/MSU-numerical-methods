@@ -119,18 +119,18 @@ int main(){
     //std::cout << "resid0 = " << resid0 << std::endl;
     std::ofstream fout("out.txt");
 
-    fout << "1  " << resid0 << " " << q * resid0 << "\n";
+    //fout << "1  " << resid0 << " " << q * resid0 << "\n";
     double resid;
 
     q = q0;    
     std::cout << "q0 = " << q0 << std::endl;
     
     fout << std::fixed << std::setprecision(15);
-    for (int iteration = 2; iteration < numberTest+2; iteration++){
+    for (int iteration = 1; iteration < numberTest+2; iteration++){
         resid = BSolver(x, ValuesInBasicNodes, tau, iteration,
         res, res1, p, N, pk, Coef, Phi, lambda); 
         //std::cout << "for iter = " << iter << " started" << std::endl;
-        fout << iteration+1 << " " << resid << " " << q0 * resid0 << "\n";
+        fout << iteration << " " << resid << " " << q0 * resid0 << "\n";
         q0 *= q0;
     }
     fout.close();

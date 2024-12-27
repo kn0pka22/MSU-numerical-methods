@@ -1,7 +1,7 @@
 #include "solution.hpp"
 
 double f(double x){
-    return cos(M_PI * 2. * x); //+ cos(M_PI * 0. * x);
+    //return cos(M_PI * 2. * x); //+ cos(M_PI * 0. * x);
     //return 1 + 0. * x;   
 	//return fabs(x)-1.;  
     //return x*x*x*exp(x);
@@ -124,13 +124,13 @@ void MultiplicationByFourier(double *vector, double *res, int N, double p){
         }
         else{
             res[i-1] = (p + 2. *double((N-1)*(N-1))) * vector[i-1]  - double((N-1)*(N-1)) * vector[i-2] - double((N-1)*(N-1)) * vector[i];
-        }
+        } 
     }
 }
 
 // Умножение вектора на матрицу Фурье с постоянной добавкой p и добавками pk на диагонали (Умножение на матрицу A)
 void MultiplicationByA(double *vector, double *res, int N, double *pk, double p){
-    for (int i = 1; i < N; i++){
+    for (int i = 1; i < N+1; i++){
         if (i == 1){
             res[i-1] = (pk[i-1] + p + double((N-1)*(N-1))) * vector[i-1]  - double((N-1)*(N-1)) * vector[i];
         }
