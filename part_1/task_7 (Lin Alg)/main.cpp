@@ -64,6 +64,11 @@ int main(int argc, char *argv[]){
     // std::cout<<"check: "<<std::endl; //<- correct
     // printVector(MultiplyMatrixByVector(FullMatrix, Fullx));
     // printVector(ValuesInNodes);
+
+
+    std::cout<<"check: "<<std::endl; //<- correct
+    printVector(MultiplyMatrixByVector(BasicMatrix, x));
+    printVector(ValuesInBasicNodes);
  
 //============================TASK 2================================
     
