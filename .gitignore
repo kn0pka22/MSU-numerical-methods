@@ -2,6 +2,13 @@
 *.exe
 .swp
 .vscode/
+
+
+*.out
+.DS_Store
+Thumbs.db
+
+
 task_1 (Fourier 1d)/task_1
 task_1 (Fourier 1d)/*.o
 task_1 (Fourier 1d)/.*
@@ -34,4 +41,10 @@ task_6 (Integration 2d)/task_6
 task_7 (Lin Alg)/task_7
 task_7 (Lin Alg)/*.o
 task_7 (Lin Alg)/.
+
+/task_2/file.ipynb
+/task_2/funcs.o
+/task_2/main.o
+/task_2/out.txt
+/task_2/proga
 
