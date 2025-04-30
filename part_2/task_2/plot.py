@@ -26,8 +26,8 @@ def plot_results(log_N, log_errors):
     # plt.minorticks_on()
     # plt.grid(True, which='minor', linestyle=':', linewidth=0.5, alpha=0.5)
 
-    plt.xlim(0, 1)
-    plt.ylim(0, 1)
+    # plt.xlim(0, 1)
+    # plt.ylim(0, 1)
 
     plt.savefig('convergence_plot.png')
     plt.show()
