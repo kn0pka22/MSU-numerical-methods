@@ -4,7 +4,7 @@
 #include <stdexcept>
 #include <iomanip>
 #include <fstream>
-
+ 
 
 double func(double t, double x) { 
     return exp(-M_PI*M_PI*t)*(-M_PI*M_PI*(x*(x-1.))-2);
@@ -184,10 +184,14 @@ void solveExplicit(int N, int M, double tau, double h, double** u) {
     // }
 
     double r = tau / (h * h);
+
     double current_t;
 
+    // 1/N <= 1/(2.*(M-0.5)^2)
+    
     // Проверка устойчивости
-    if (r >= 0.5) {
+    // if (r >= 0.5) {
+    if (N < 2.*(M-0.5)*(M-0.5)){
         std::cerr << "Warning: Explicit scheme may be unstable (tau / (h * h) = " << r << " >= 0.5)\n";
     }
 
@@ -246,40 +250,56 @@ void saveVectorToFile(double* vec, int size, const std::string& filename) {
     }
     outFile.close();
 }
-
-void runConvergenceTest(const std::string& filename, double T) {
+void runConvergenceTest(const std::string& filename, const std::string& SchemeName, double T, int testCase) {
     std::ofstream outfile(filename);
     if (!outfile.is_open()) {
         throw std::runtime_error("Cannot open file for convergence test results");
     }
-    
-    // outfile << std::fixed 
-    //         << std::setw(4)  <<"M"              << " | "
-    //         << std::setw(15) << "h     "        << " | "
-    //         << std::setw(15) << "tau    "       << " | "
-    //         << std::setw(15) << "error   "      << " | "
-    //         << std::setw(15) << "log_h    "     << " | "
-    //         << std::setw(15) << "log_error  "   << " | "
-    //         << std::endl;
-    // outfile << std::setw(79)
-    //         << std::setfill('-') << ""
-    //         << std::endl;
 
     outfile << std::fixed 
-            << std::setw(4)  <<"M"              
-            << std::setw(15) << "h     "       
-            << std::setw(15) << "tau    "      
-            << std::setw(15) << "error   "     
-            << std::setw(15) << "log_h    "    
-            << std::setw(15) << "log_error  "   
+            << std::setw(8) << "M"      
+            << std::setw(8) << "N"              
+            << std::setw(15) << "h"       
+            << std::setw(15) << "tau"      
+            << std::setw(15) << "error"     
+            << std::setw(15) << "log_h"    
+            << std::setw(15) << "log_error"   
             << std::endl;
     
     const int test_count = 5;
-    int M_values[] = {8, 16, 32, 64, 128};
-    
+    const int M_values[] = {10, 20, 40, 80, 160};
+    int N_values[test_count];
+
+    // Выбираем N_values в зависимости от testCase
+    switch(testCase) {
+        case 1:  //  impl M=N
+            for (int i = 0; i < test_count; ++i) {
+                N_values[i] = M_values[i];
+            }
+            break;
+
+        case 2:  //  impl M,N -> 2M,4N 
+            for (int i = 0; i < test_count; ++i) {
+                N_values[i] = 2 * (M_values[i]) * (M_values[i]);
+            }
+            break;
+            
+        case 3:  // expl M,N -> 2M,2N 
+        {
+            int N0 = 2 * (M_values[4]) * (M_values[4]);
+            for (int i = 0; i < test_count; ++i) {
+                N_values[i] = N0 * (1 << i);  // Умножение на 2^i
+            }
+            break;
+        }
+        
+        default:
+            throw std::invalid_argument("Unknown test case");
+    }
+
     for (int i = 0; i < test_count; ++i) {
         int M = M_values[i];
-        int N = 2 * M * M;
+        int N = N_values[i];
         double h = 1.0 / (M - 0.5);
         double tau = T / N;
         
@@ -287,28 +307,24 @@ void runConvergenceTest(const std::string& filename, double T) {
         for (int j = 0; j < N+1; ++j) {
             u[j] = new double[M+1]();
         }
+
+        if (SchemeName == "explicit") {
+            solveExplicit(N, M, tau, h, u);
+        } else {
+            solveImplicit(M, N, tau, u);
+        }
         
-        solveImplicit(M, N, tau, u);
         double err = error(u, M, N, h, T);
         
-        // outfile << std::scientific 
-        //         << std::setfill(' ')
-        //         << std::setw(4) << M        << " | "
-        //         << std::setw(15) << h       << " | "
-        //         << std::setw(15) << tau     << " | "
-        //         << std::setw(15) << err     << " | "
-        //         << std::setw(15)<< log(h)   << " | "
-        //         << std::setw(15)<< log(err) << " | "
-        //         << std::endl;
-
         outfile << std::scientific 
                 << std::setfill(' ')
-                << std::setw(4) << M       
+                << std::setw(8) << M     
+                << std::setw(8) << N       
                 << std::setw(15) << h     
                 << std::setw(15) << tau   
                 << std::setw(15) << err    
-                << std::setw(15)<< log(h)  
-                << std::setw(15)<< log(err)
+                << std::setw(15) << log(h)  
+                << std::setw(15) << log(err)
                 << std::endl;
         
         freeSolution(u, N);

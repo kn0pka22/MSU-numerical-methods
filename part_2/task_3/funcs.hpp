@@ -21,7 +21,7 @@ void printVec(double* vec, int N);
 void solveExplicit(int N, int M, double tau, double h, double** u);
 
 double error(double** u, int M, int N, double h, double T);
-void runConvergenceTest(const std::string& filename, double T);
+void runConvergenceTest(const std::string& filename, const std::string& SchemeName, double T, int testCase);
 
 void saveMatrixToFile(double** matr, int rows, int cols, const std::string& filename);
 void saveVectorToFile(double* vec, int size, const std::string& filename);
