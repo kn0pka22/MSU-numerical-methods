@@ -55,11 +55,11 @@ double ScalarProduct(double* ar1,double* ar2, int N){  //подумать тут
     return res;
 }
 
-void CoeffCalculate(int N, double* yk, double* phi, double* cn){
+void CoeffCalculate(int Nx, double* yk, double* phi, double* cn){
     double a = 0;
     double b = 0; 
-    for (int n=1; n<N; ++n){
-        PhiVectorCalculate(N, n, phi);
+    for (int n=1; n<Nx; ++n){
+        PhiVectorCalculate(Nx, n, phi);
         a = ScalarProduct(yk, phi, N);
         b = ScalarProduct(phi,phi, N);
         cn[n] = a/b; //a*2.;

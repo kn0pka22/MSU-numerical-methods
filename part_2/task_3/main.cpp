@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
         // std::cout<<"NUM OF STEPS = "<<levels<<std::endl;
 
-        double* xGrid = new double[M+1];
+        double* xGrid = new double [M+1];
         for (int j = 0; j < M+1; ++j) {
             xGrid[j] = -h/2. + j*h;
         }

@@ -7,11 +7,14 @@
  
 
 double func(double t, double x) { 
-    return exp(-M_PI*M_PI*t)*(-M_PI*M_PI*(x*(x-1.))-2);
+    return exp(-M_PI*M_PI*t)*(-M_PI * M_PI *sin(x)*(x-1) + sin(x)*(x-1)-2*cos(x));  
+    // return exp(-M_PI*M_PI*t)*(-M_PI*M_PI*(x*(x-1.))-2);
 }
  
 double u0(double x) { 
-    return x*(x-1);
+    // return x*(x-1);
+    return sin(x)*(x-1);
+
 }
 
 void printVec(double* vec, int N){
@@ -22,8 +25,9 @@ void printVec(double* vec, int N){
 }
 
 double uFunc(double t, double x){
-    // return sin(M_PI*x) * exp(-t*M_PI*M_PI);
-    return exp(-M_PI*M_PI*t)*x*(x-1);
+    // return exp(-M_PI*M_PI*t)*x*(x-1);
+    return exp(-M_PI*M_PI*t) * sin(x) * (x - 1);
+
 
 }
 
@@ -121,6 +125,10 @@ void createThreeDiag(double* upDiag, double* midDiag, double* downDiag, int M, d
     midDiag[0] = 1.;
     downDiag[0]= 0.;
 
+    // upDiag[1]   = -1./(h*h);
+    // midDiag[1]  =  3./(h*h) + 1./tau;
+    // downDiag[1] = -1./(h*h);
+
     for (int i=1;i<M;++i){
         upDiag[i]   = -1./(h*h);
         midDiag[i]  =  2./(h*h) + 1./tau;
@@ -136,7 +144,8 @@ void createThreeDiag(double* upDiag, double* midDiag, double* downDiag, int M, d
 void SolveTridiagonal(double* upDiag, double* midDiag, double* downDiag, double* rhs, int M){                   
 
     double* alpha = new double[M + 1];
-    double* beta = new double[M + 1];
+    double* beta  = new double[M + 1];
+    
 
     alpha[0] = -upDiag[0] / midDiag[0];
     beta[0] = rhs[0] / midDiag[0];
